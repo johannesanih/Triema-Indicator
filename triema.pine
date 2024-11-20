@@ -52,42 +52,95 @@ else
         confirmationTrendSituation := "NEUTRAL"
 
 //Check for Pullbacks
+//--------------------------------------------
+
+
 var float entryPriceLevel = na
+var float stopLossPriceLevel = na
+var float takeProfitPriceLevel1 = na
+var float takeProfitPriceLevel2 = na
+var float takeProfitPriceLevel3 = na
+var float risk = na
+
+//Arrays to store the highs and lows of 5 candles behind the current candle
 var float[] highsArray = array.new_float(0)
 var float[] lowsArray = array.new_float(0)
 
+//Confirm that it is buying both in the higher and lower timeframes
 if confirmationTrendSituation == "BUY" and currentTrendSituation == "BUY"
+    //Confirm that it price broke below the fastEMA
     if close[1] < currentFastEMA and open[1] > currentFastEMA
-        if bar_index >= 5
-            array.clear(highsArray)
+        if bar_index >= 5 //make sure there at least 5 candles to work with
+            array.clear(highsArray) //Clear old values from array first
             array.clear(lowsArray)
-            for i = 1 to 5
+            for i = 1 to 5 //loop through and iteration of 5 and push the highs and lows into their respective arrays
                 array.push(highsArray, high[i])
                 array.push(lowsArray, low[i])
 
+                //If it gets bigger than 5 remove the oldest value
                 if array.size(highsArray) > 5
                     array.shift(highsArray)
                 if array.size(lowsArray) > 5
                     array.shift(lowsArray)
 
-entryPriceLevel := array.max(highsArray) + pipsBufferInput
-line.new(x1=bar_index, y1=entryPriceLevel, x2=bar_index+10, y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed, width = entryLineWidth)
+
 //...calculate stoploss and takeprofit levels
 
+entryPriceLevel := array.max(highsArray) + pipsBufferInput
+stopLossPriceLevel := array.min(lowsArray) - pipsBufferInput
+risk := entryPriceLevel - stopLossPriceLevel
+takeProfitPriceLevel1 := entryPriceLevel + risk
+takeProfitPriceLevel2 := takeProfitPriceLevel1 + risk
+takeProfitPriceLevel3 := takeProfitPriceLevel2 + risk
+
+//Draw position lines
+//Entry
+line.new(x1=bar_index, y1=entryPriceLevel, x2=bar_index+10, y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed, width = entryLineWidth)
+//Stop Loss
+line.new(x1=bar_index, y1=stopLossPriceLevel, x2=bar_index+10, y2=stopLossPriceLevel, color=stopLossLevelColor, style = line.style_solid, width = stopLossLineWidth)
+//Take profit 1
+line.new(x1=bar_index, y1=takeProfitPriceLevel1, x2=bar_index+10, y2=takeProfitPriceLevel1, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
+//Take profit 2
+line.new(x1=bar_index, y1=takeProfitPriceLevel2, x2=bar_index+10, y2=takeProfitPriceLevel2, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
+//Take profit 3
+line.new(x1=bar_index, y1=takeProfitPriceLevel3, x2=bar_index+10, y2=takeProfitPriceLevel3, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
+
+
+//Confirm that it is selling both in the higher and lower timeframes
 if confirmationTrendSituation == "SELL" and currentTrendSituation == "SELL"
+    //confirm that the price has broken above the fastEMA
     if close[1] > currentFastEMA and open[1] < currentFastEMA
-        if bar_index >= 5
-            array.clear(highsArray)
+        if bar_index >= 5 //make sure there at least 5 candles to work with
+            array.clear(highsArray) //Clear old values from array first
             array.clear(lowsArray)
-            for i = 1 to 5
+            for i = 1 to 5 //loop through and iteration of 5 and push the highs and lows into their respective arrays
                 array.push(highsArray, high[i])
                 array.push(lowsArray, low[i])
                 
+                //If it gets bigger than 5 remove the oldest value
                 if array.size(highsArray) > 5
                     array.shift(highsArray)
                 if array.size(lowsArray) > 5
                     array.shift(lowsArray)
 
-entryPriceLevel := array.min(lowsArray)  - pipsBufferInput
-line.new(x1=bar_index, y1=entryPriceLevel, x2=bar_index+10, y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed, width = entryLineWidth)
+
 //...calculate stoploss and takeprofit levels
+
+entryPriceLevel := array.min(lowsArray) - pipsBufferInput
+stopLossPriceLevel := array.max(highsArray) + pipsBufferInput
+risk := stopLossPriceLevel - entryPriceLevel
+takeProfitPriceLevel1 := entryPriceLevel - risk
+takeProfitPriceLevel2 := takeProfitPriceLevel1 - risk
+takeProfitPriceLevel3 := takeProfitPriceLevel2 - risk
+
+//Draw position lines
+//Entry
+line.new(x1=bar_index, y1=entryPriceLevel, x2=bar_index+10, y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed, width = entryLineWidth)
+//Stop Loss
+line.new(x1=bar_index, y1=stopLossPriceLevel, x2=bar_index+10, y2=stopLossPriceLevel, color=stopLossLevelColor, style = line.style_solid, width = stopLossLineWidth)
+//Take profit 1
+line.new(x1=bar_index, y1=takeProfitPriceLevel1, x2=bar_index+10, y2=takeProfitPriceLevel1, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
+//Take profit 2
+line.new(x1=bar_index, y1=takeProfitPriceLevel2, x2=bar_index+10, y2=takeProfitPriceLevel2, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
+//Take profit 3
+line.new(x1=bar_index, y1=takeProfitPriceLevel3, x2=bar_index+10, y2=takeProfitPriceLevel3, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
