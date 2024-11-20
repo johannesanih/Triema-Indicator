@@ -66,22 +66,25 @@ var float risk = na
 var float[] highsArray = array.new_float(0)
 var float[] lowsArray = array.new_float(0)
 
+countAndPushCandles () =>
+    if bar_index >= 5 //make sure there at least 5 candles to work with
+        array.clear(highsArray) //Clear old values from array first
+        array.clear(lowsArray)
+        for i = 1 to 5 //loop through and iteration of 5 and push the highs and lows into their respective arrays
+            array.push(highsArray, high[i])
+            array.push(lowsArray, low[i])
+
+            //If it gets bigger than 5 remove the oldest value
+            if array.size(highsArray) > 5
+                array.shift(highsArray)
+            if array.size(lowsArray) > 5
+                array.shift(lowsArray)
+
 //Confirm that it is buying both in the higher and lower timeframes
 if confirmationTrendSituation == "BUY" and currentTrendSituation == "BUY"
     //Confirm that it price broke below the fastEMA
     if close[1] < currentFastEMA and open[1] > currentFastEMA
-        if bar_index >= 5 //make sure there at least 5 candles to work with
-            array.clear(highsArray) //Clear old values from array first
-            array.clear(lowsArray)
-            for i = 1 to 5 //loop through and iteration of 5 and push the highs and lows into their respective arrays
-                array.push(highsArray, high[i])
-                array.push(lowsArray, low[i])
-
-                //If it gets bigger than 5 remove the oldest value
-                if array.size(highsArray) > 5
-                    array.shift(highsArray)
-                if array.size(lowsArray) > 5
-                    array.shift(lowsArray)
+        countAndPushCandles()
 
 
 //...calculate stoploss and takeprofit levels
@@ -110,18 +113,7 @@ line.new(x1=bar_index, y1=takeProfitPriceLevel3, x2=bar_index+10, y2=takeProfitP
 if confirmationTrendSituation == "SELL" and currentTrendSituation == "SELL"
     //confirm that the price has broken above the fastEMA
     if close[1] > currentFastEMA and open[1] < currentFastEMA
-        if bar_index >= 5 //make sure there at least 5 candles to work with
-            array.clear(highsArray) //Clear old values from array first
-            array.clear(lowsArray)
-            for i = 1 to 5 //loop through and iteration of 5 and push the highs and lows into their respective arrays
-                array.push(highsArray, high[i])
-                array.push(lowsArray, low[i])
-                
-                //If it gets bigger than 5 remove the oldest value
-                if array.size(highsArray) > 5
-                    array.shift(highsArray)
-                if array.size(lowsArray) > 5
-                    array.shift(lowsArray)
+        countAndPushCandles()
 
 
 //...calculate stoploss and takeprofit levels
