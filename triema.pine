@@ -15,6 +15,10 @@ var color entryLineColor = input.color(color.white, "Entry-Level Color")
 var color stopLossLevelColor = input.color(color.red, "Stop-Loss Level Color")
 var color takeProfitLevelColor = input.color(color.green, "Take-Profit Level Color")
 
+var int entryLineWidth = input.int(3, "Entry Line Width")
+var int stopLossLineWidth = input.int(2, "Stop-Loss Line Width")
+var int takeProfitLineWidth = input.int(2, "Take-Profit Line Width")
+
 //Indicators
 float fastEMA = ta.ema(sourceInput, fastEmaLengthInput)
 float midEMA = ta.ema(sourceInput, midEMALengthInput)
@@ -67,7 +71,8 @@ if confirmationTrendSituation == "BUY" and currentTrendSituation == "BUY"
                     array.shift(lowsArray)
 
 entryPriceLevel := array.max(highsArray) + pipsBufferInput
-line.new(x1=bar_index, y1=entryPriceLevel, x2=bar_index+10, y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed)
+line.new(x1=bar_index, y1=entryPriceLevel, x2=bar_index+10, y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed, width = entryLineWidth)
+//...calculate stoploss and takeprofit levels
 
 if confirmationTrendSituation == "SELL" and currentTrendSituation == "SELL"
     if close[1] > currentFastEMA and open[1] < currentFastEMA
@@ -84,3 +89,5 @@ if confirmationTrendSituation == "SELL" and currentTrendSituation == "SELL"
                     array.shift(lowsArray)
 
 entryPriceLevel := array.min(lowsArray)  - pipsBufferInput
+line.new(x1=bar_index, y1=entryPriceLevel, x2=bar_index+10, y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed, width = entryLineWidth)
+//...calculate stoploss and takeprofit levels
