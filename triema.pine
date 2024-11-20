@@ -144,3 +144,5 @@ line.new(x1=bar_index, y1=takeProfitPriceLevel1, x2=bar_index+10, y2=takeProfitP
 line.new(x1=bar_index, y1=takeProfitPriceLevel2, x2=bar_index+10, y2=takeProfitPriceLevel2, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
 //Take profit 3
 line.new(x1=bar_index, y1=takeProfitPriceLevel3, x2=bar_index+10, y2=takeProfitPriceLevel3, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
+
+plot(sourceInput)
