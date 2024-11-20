@@ -7,8 +7,13 @@ sourceInput = input.source(close, "Source")
 var int fastEmaLengthInput = input.int(8, "Fast EMA")
 var int midEMALengthInput = input.int(13, "Mid EMA")
 var int slowEMALengthInput = input.int(21, "Slow EMA")
+var float pipsBufferInput = input.float(0.0003, "Pips Buffer")
 var tradingTimeFrameInput = input.timeframe("5m", "Trading Timeframe")
 var trendConfirmationTimeFrameInput = input.timeframe("1H", "Trend Confirmation Timeframe")
+
+var color entryLineColor = input.color(color.white, "Entry-Level Color")
+var color stopLossLevelColor = input.color(color.red, "Stop-Loss Level Color")
+var color takeProfitLevelColor = input.color(color.green, "Take-Profit Level Color")
 
 //Indicators
 float fastEMA = ta.ema(sourceInput, fastEmaLengthInput)
@@ -43,19 +48,39 @@ else
         confirmationTrendSituation := "NEUTRAL"
 
 //Check for Pullbacks
+var float entryPriceLevel = na
 var float[] highsArray = array.new_float(0)
 var float[] lowsArray = array.new_float(0)
 
 if confirmationTrendSituation == "BUY" and currentTrendSituation == "BUY"
     if close[1] < currentFastEMA and open[1] > currentFastEMA
         if bar_index >= 5
+            array.clear(highsArray)
+            array.clear(lowsArray)
             for i = 1 to 5
                 array.push(highsArray, high[i])
                 array.push(lowsArray, low[i])
 
+                if array.size(highsArray) > 5
+                    array.shift(highsArray)
+                if array.size(lowsArray) > 5
+                    array.shift(lowsArray)
+
+entryPriceLevel := array.max(highsArray) + pipsBufferInput
+line.new(x1=bar_index, y1=entryPriceLevel, x2=bar_index+10, y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed)
+
 if confirmationTrendSituation == "SELL" and currentTrendSituation == "SELL"
     if close[1] > currentFastEMA and open[1] < currentFastEMA
         if bar_index >= 5
+            array.clear(highsArray)
+            array.clear(lowsArray)
             for i = 1 to 5
                 array.push(highsArray, high[i])
                 array.push(lowsArray, low[i])
+                
+                if array.size(highsArray) > 5
+                    array.shift(highsArray)
+                if array.size(lowsArray) > 5
+                    array.shift(lowsArray)
+
+entryPriceLevel := array.min(lowsArray)  - pipsBufferInput
