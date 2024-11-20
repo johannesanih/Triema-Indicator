@@ -1,0 +1,61 @@
+//@version=5
+
+indicator("Triema", overlay=true)
+
+//Input Variables
+sourceInput = input.source(close, "Source")
+var int fastEmaLengthInput = input.int(8, "Fast EMA")
+var int midEMALengthInput = input.int(13, "Mid EMA")
+var int slowEMALengthInput = input.int(21, "Slow EMA")
+var tradingTimeFrameInput = input.timeframe("5m", "Trading Timeframe")
+var trendConfirmationTimeFrameInput = input.timeframe("1H", "Trend Confirmation Timeframe")
+
+//Indicators
+float fastEMA = ta.ema(sourceInput, fastEmaLengthInput)
+float midEMA = ta.ema(sourceInput, midEMALengthInput)
+float slowEMA = ta.ema(sourceInput, slowEMALengthInput)
+
+//Trade Timeframe Trend Situation
+float currentFastEMA = request.security(syminfo.tickerid, tradingTimeFrameInput, fastEMA)
+float currentMidEMA = request.security(syminfo.tickerid, tradingTimeFrameInput, midEMA)
+float currentSlowEMA = request.security(syminfo.tickerid, tradingTimeFrameInput, slowEMA)
+
+var string currentTrendSituation = "NEUTRAL"
+if currentFastEMA > currentMidEMA and currentMidEMA > currentSlowEMA
+    currentTrendSituation := "BUY" 
+else
+    if currentFastEMA < currentMidEMA and currentMidEMA < currentSlowEMA
+        currentTrendSituation := "SELL"
+    else
+        currentTrendSituation := "NEUTRAL"
+
+//Confirmation Trend Situation
+float confirmationFastEMA = request.security(syminfo.tickerid, trendConfirmationTimeFrameInput, fastEMA)
+float confirmationSlowEMA = request.security(syminfo.tickerid, trendConfirmationTimeFrameInput, slowEMA)
+
+var string confirmationTrendSituation = "NEUTRAL"
+if confirmationFastEMA > confirmationSlowEMA
+    confirmationTrendSituation := "BUY"
+else
+    if confirmationFastEMA < confirmationSlowEMA
+        confirmationTrendSituation := "SELL"
+    else
+        confirmationTrendSituation := "NEUTRAL"
+
+//Check for Pullbacks
+var float[] highsArray = array.new_float(0)
+var float[] lowsArray = array.new_float(0)
+
+if confirmationTrendSituation == "BUY" and currentTrendSituation == "BUY"
+    if close[1] < currentFastEMA and open[1] > currentFastEMA
+        if bar_index >= 5
+            for i = 1 to 5
+                array.push(highsArray, high[i])
+                array.push(lowsArray, low[i])
+
+if confirmationTrendSituation == "SELL" and currentTrendSituation == "SELL"
+    if close[1] > currentFastEMA and open[1] < currentFastEMA
+        if bar_index >= 5
+            for i = 1 to 5
+                array.push(highsArray, high[i])
+                array.push(lowsArray, low[i])
