@@ -9,7 +9,7 @@ var int midEMALengthInput = input.int(13, "Mid EMA")
 var int slowEMALengthInput = input.int(21, "Slow EMA")
 var float pipsBufferInput = input.float(0.0003, "Pips Buffer")
 var tradingTimeFrameInput = input.timeframe("5", "Trading Timeframe")
-var trendConfirmationTimeFrameInput = input.timeframe("1H", "Trend Confirmation Timeframe")
+var trendConfirmationTimeFrameInput = input.timeframe("60", "Trend Confirmation Timeframe")
 
 var color entryLineColor = input.color(color.white, "Entry-Level Color")
 var color stopLossLevelColor = input.color(color.red, "Stop-Loss Level Color")
