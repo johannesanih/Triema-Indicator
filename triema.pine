@@ -117,8 +117,6 @@ drawPositionLines (x1, x2, length) =>
     //Take profit 3
     line.new(x1=x1[bar_index], y1=takeProfitPriceLevel3, x2=x2[bar_index+length], y2=takeProfitPriceLevel3, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
 
-var float bar_i = na //the index of the bars as it passes
-
 if position == 1
     countAndPushCandles()
 
@@ -132,7 +130,6 @@ if position == 1
     takeProfitPriceLevel3 := takeProfitPriceLevel2 + risk
 
     //Draw Lines
-    bar_i := na(bar_i) ? 1 : bar_i + 1
     drawPositionLines(time, time, positionLinesLength)
 else
     if position == -1
