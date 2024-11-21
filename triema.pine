@@ -11,9 +11,17 @@ var float pipsBufferInput = input.float(0.0003, "Pips Buffer")
 var tradingTimeFrameInput = input.timeframe("5", "Trading Timeframe")
 var trendConfirmationTimeFrameInput = input.timeframe("60", "Trend Confirmation Timeframe")
 
+var color fastEMAColor = input.color(color.yellow, "Fast EMA color")
+var color midEMAColor = input.color(color.orange, "Mid EMA color")
+var color slowEMAColor = input.color(color.red, "Slow EMA color")
+
 var color entryLineColor = input.color(color.white, "Entry-Level Color")
 var color stopLossLevelColor = input.color(color.red, "Stop-Loss Level Color")
 var color takeProfitLevelColor = input.color(color.green, "Take-Profit Level Color")
+
+var int fastEMALineWidth = input.int(1, "Fast EMA line width")
+var int midEMALineWidth = input.int(1, "Mid EMA line width")
+var int slowEMALineWidth = input.int(1, "Slow EMA line width")
 
 var int entryLineWidth = input.int(3, "Entry Line Width")
 var int stopLossLineWidth = input.int(2, "Stop-Loss Line Width")
@@ -143,4 +151,6 @@ for i = 1 to 500
             //Draw Lines
             drawPositionLines(i)
 
-plot(sourceInput, color = na)
+plot(fastEMA, "Fast EMA", fastEMAColor, fastEMALineWidth, plot.style_line)
+plot(midEMA, "Mid EMA", midEMAColor, midEMALineWidth, plot.style_line)
+plot(slowEMA, "Slow EMA", slowEMAColor, slowEMALineWidth, plot.style_line)
