@@ -52,20 +52,6 @@ else
         confirmationTrendSituation := "NEUTRAL"
 
 
-var int position = 0 //1-buy, 0-neutral, -1 - sell
-//Confirm that it is buying both in the higher and lower timeframes
-if confirmationTrendSituation == "BUY" and currentTrendSituation == "BUY"
-    //Confirm that it price broke below the fastEMA
-    if close[1] < currentFastEMA and open[1] > currentFastEMA
-        position := 1
-else //Confirm that it is selling both in the higher and lower timeframes
-    if confirmationTrendSituation == "SELL" and currentTrendSituation == "SELL"
-        //confirm that the price has broken above the fastEMA
-        if close[1] > currentFastEMA and open[1] < currentFastEMA
-            position := -1
-    else
-        position := 0
-
 
 
 //Check for Pullbacks
@@ -97,47 +83,64 @@ countAndPushCandles () =>
             if array.size(lowsArray) > 5
                 array.shift(lowsArray)
 
-drawPositionLines () =>
+drawPositionLines (index) =>
     //Draw position lines
     //Entry
-    line.new(x1=bar_index, y1=entryPriceLevel, x2=bar_index+10, y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed, width = entryLineWidth)
+    line.new(x1=bar_index[index], y1=entryPriceLevel, x2=bar_index[index]+10, y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed, width = entryLineWidth)
     //Stop Loss
-    line.new(x1=bar_index, y1=stopLossPriceLevel, x2=bar_index+10, y2=stopLossPriceLevel, color=stopLossLevelColor, style = line.style_solid, width = stopLossLineWidth)
+    line.new(x1=bar_index[index], y1=stopLossPriceLevel, x2=bar_index[index]+10, y2=stopLossPriceLevel, color=stopLossLevelColor, style = line.style_solid, width = stopLossLineWidth)
     //Take profit 1
-    line.new(x1=bar_index, y1=takeProfitPriceLevel1, x2=bar_index+10, y2=takeProfitPriceLevel1, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
+    line.new(x1=bar_index[index], y1=takeProfitPriceLevel1, x2=bar_index[index]+10, y2=takeProfitPriceLevel1, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
     //Take profit 2
-    line.new(x1=bar_index, y1=takeProfitPriceLevel2, x2=bar_index+10, y2=takeProfitPriceLevel2, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
+    line.new(x1=bar_index[index], y1=takeProfitPriceLevel2, x2=bar_index[index]+10, y2=takeProfitPriceLevel2, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
     //Take profit 3
-    line.new(x1=bar_index, y1=takeProfitPriceLevel3, x2=bar_index+10, y2=takeProfitPriceLevel3, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
+    line.new(x1=bar_index[index], y1=takeProfitPriceLevel3, x2=bar_index[index]+10, y2=takeProfitPriceLevel3, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
 
-if position == 1
-    countAndPushCandles()
+for i = 1 to 500
 
-    //...calculate stoploss and takeprofit levels
+    var int position = 0 //1-buy, 0-neutral, -1 - sell
+    //Confirm that it is buying both in the higher and lower timeframes
+    if confirmationTrendSituation == "BUY" and currentTrendSituation == "BUY"
+        //Confirm that it price broke below the fastEMA
+        if close[1] < currentFastEMA and open[1] > currentFastEMA
+            position := 1
+    else //Confirm that it is selling both in the higher and lower timeframes
+        if confirmationTrendSituation == "SELL" and currentTrendSituation == "SELL"
+            //confirm that the price has broken above the fastEMA
+            if close[1] > currentFastEMA and open[1] < currentFastEMA
+                position := -1
+        else
+            position := 0
 
-    entryPriceLevel := array.max(highsArray) + pipsBufferInput
-    stopLossPriceLevel := array.min(lowsArray) - pipsBufferInput
-    risk := entryPriceLevel - stopLossPriceLevel
-    takeProfitPriceLevel1 := entryPriceLevel + risk
-    takeProfitPriceLevel2 := takeProfitPriceLevel1 + risk
-    takeProfitPriceLevel3 := takeProfitPriceLevel2 + risk
 
-    //Draw Lines
-    drawPositionLines()
-else
-    if position == -1
+    if position == 1
         countAndPushCandles()
 
         //...calculate stoploss and takeprofit levels
 
-        entryPriceLevel := array.min(lowsArray) - pipsBufferInput
-        stopLossPriceLevel := array.max(highsArray) + pipsBufferInput
-        risk := stopLossPriceLevel - entryPriceLevel
-        takeProfitPriceLevel1 := entryPriceLevel - risk
-        takeProfitPriceLevel2 := takeProfitPriceLevel1 - risk
-        takeProfitPriceLevel3 := takeProfitPriceLevel2 - risk
+        entryPriceLevel := array.max(highsArray) + pipsBufferInput
+        stopLossPriceLevel := array.min(lowsArray) - pipsBufferInput
+        risk := entryPriceLevel - stopLossPriceLevel
+        takeProfitPriceLevel1 := entryPriceLevel + risk
+        takeProfitPriceLevel2 := takeProfitPriceLevel1 + risk
+        takeProfitPriceLevel3 := takeProfitPriceLevel2 + risk
 
         //Draw Lines
-        drawPositionLines()
+        drawPositionLines(i)
+    else
+        if position == -1
+            countAndPushCandles()
+
+            //...calculate stoploss and takeprofit levels
+
+            entryPriceLevel := array.min(lowsArray) - pipsBufferInput
+            stopLossPriceLevel := array.max(highsArray) + pipsBufferInput
+            risk := stopLossPriceLevel - entryPriceLevel
+            takeProfitPriceLevel1 := entryPriceLevel - risk
+            takeProfitPriceLevel2 := takeProfitPriceLevel1 - risk
+            takeProfitPriceLevel3 := takeProfitPriceLevel2 - risk
+
+            //Draw Lines
+            drawPositionLines(i)
 
 plot(sourceInput, color = na)
