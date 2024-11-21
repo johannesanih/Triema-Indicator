@@ -27,7 +27,7 @@ var int entryLineWidth = input.int(3, "Entry Line Width")
 var int stopLossLineWidth = input.int(2, "Stop-Loss Line Width")
 var int takeProfitLineWidth = input.int(2, "Take-Profit Line Width")
 
-var int positionLinesLength = input.int(10, "Position Lines' Length")
+var int positionLinesLength = input.int(1, "Position Lines' Length")
 
 //Indicators
 float fastEMA = ta.ema(sourceInput, fastEmaLengthInput)
@@ -106,7 +106,7 @@ countAndPushCandles () =>
 
 drawPositionLines (x, length) =>
     time_diff = time[1] - time
-    x2 = x + (time_diff * length)
+    x2 = bar_index+10
     //Draw position lines
     //Entry
     line.new(x1=x, y1=entryPriceLevel, x2=x2, y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed, width = entryLineWidth)
