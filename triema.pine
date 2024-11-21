@@ -104,18 +104,20 @@ countAndPushCandles () =>
             if array.size(lowsArray) > 5
                 array.shift(lowsArray)
 
-drawPositionLines (x1, x2, length) =>
+drawPositionLines (x, length) =>
+    time_diff = time[1] - time
+    x2 = x + (time_diff * length)
     //Draw position lines
     //Entry
-    line.new(x1=x1[bar_index], y1=entryPriceLevel, x2=x2[bar_index+length], y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed, width = entryLineWidth)
+    line.new(x1=x, y1=entryPriceLevel, x2=x2, y2=entryPriceLevel, color=entryLineColor, style = line.style_dashed, width = entryLineWidth)
     //Stop Loss
-    line.new(x1=x1[bar_index], y1=stopLossPriceLevel, x2=x2[bar_index+length], y2=stopLossPriceLevel, color=stopLossLevelColor, style = line.style_solid, width = stopLossLineWidth)
+    line.new(x1=x, y1=stopLossPriceLevel, x2=x2, y2=stopLossPriceLevel, color=stopLossLevelColor, style = line.style_solid, width = stopLossLineWidth)
     //Take profit 1
-    line.new(x1=x1[bar_index], y1=takeProfitPriceLevel1, x2=x2[bar_index+length], y2=takeProfitPriceLevel1, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
+    line.new(x1=x, y1=takeProfitPriceLevel1, x2=x2, y2=takeProfitPriceLevel1, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
     //Take profit 2
-    line.new(x1=x1[bar_index], y1=takeProfitPriceLevel2, x2=x2[bar_index+length], y2=takeProfitPriceLevel2, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
+    line.new(x1=x, y1=takeProfitPriceLevel2, x2=x2, y2=takeProfitPriceLevel2, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
     //Take profit 3
-    line.new(x1=x1[bar_index], y1=takeProfitPriceLevel3, x2=x2[bar_index+length], y2=takeProfitPriceLevel3, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
+    line.new(x1=x, y1=takeProfitPriceLevel3, x2=x2, y2=takeProfitPriceLevel3, color=takeProfitLevelColor, style = line.style_solid, width = takeProfitLineWidth)
 
 if position == 1
     countAndPushCandles()
@@ -130,7 +132,7 @@ if position == 1
     takeProfitPriceLevel3 := takeProfitPriceLevel2 + risk
 
     //Draw Lines
-    drawPositionLines(time, time, positionLinesLength)
+    drawPositionLines(time, positionLinesLength)
 else
     if position == -1
         countAndPushCandles()
@@ -145,7 +147,7 @@ else
         takeProfitPriceLevel3 := takeProfitPriceLevel2 - risk
 
         //Draw Lines
-        drawPositionLines(time, time, positionLinesLength)
+        drawPositionLines(time, positionLinesLength)
 
 plot(fastEMA, "Fast EMA", fastEMAColor, fastEMALineWidth, plot.style_line)
 plot(midEMA, "Mid EMA", midEMAColor, midEMALineWidth, plot.style_line)
